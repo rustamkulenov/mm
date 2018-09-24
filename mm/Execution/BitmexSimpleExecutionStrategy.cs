@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bitmex.NET;
 using Bitmex.NET.Models;
+using Bitmex.NET.Dtos;
 
 namespace mm.Execution
 {
@@ -20,16 +21,16 @@ namespace mm.Execution
             _bitmexSvc = bitmexSvc;
         }
 
-        async Task Buy(string symbol, int quantity, decimal price)
+        async Task<OrderDto> Buy(string symbol, int quantity, decimal price)
         {
             var cmd = OrderPOSTRequestParams.CreateSimpleLimit(symbol, quantity, price, OrderSide.Buy);
-            await _bitmexSvc.Execute(BitmexApiUrls.Order.PostOrder, cmd);
+            return await _bitmexSvc.Execute(BitmexApiUrls.Order.PostOrder, cmd);
         }
 
-        async Task Sell(string symbol, int quantity, decimal price)
+        async Task<OrderDto> Sell(string symbol, int quantity, decimal price)
         {
             var cmd = OrderPOSTRequestParams.CreateSimpleLimit(symbol, quantity, price, OrderSide.Sell);
-            await _bitmexSvc.Execute(BitmexApiUrls.Order.PostOrder, cmd);
+            return await _bitmexSvc.Execute(BitmexApiUrls.Order.PostOrder, cmd);
         }
 
         async Task IExecutionStrategy.DeleteAllOrders(Instrument instr)
@@ -63,6 +64,7 @@ namespace mm.Execution
         async Task<Tuple<decimal, decimal>> IExecutionStrategy.GetBBA(Instrument instr)
         {
             // Return hardcoded value because API returns 403 forbidden
+            // ISSUE: https://github.com/semashkinvg/Bitmex.NET/issues/16
             return await Task.FromResult(new Tuple<decimal, decimal>(235.05m, 235.15m));
 
             var cmd = new QuoteGETRequestParams() { Symbol = instr.Symbol };

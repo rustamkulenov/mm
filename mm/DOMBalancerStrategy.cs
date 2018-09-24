@@ -13,12 +13,20 @@ namespace mm
         private readonly IOrderManager _om;
         private readonly IExecutionStrategy _exec;
         private readonly StrategySettings _settings;
+        private readonly IDOMListener _domListener;
 
-        public DOMBalancerStrategy(IOrderManager om, IExecutionStrategy exec, StrategySettings settings) : base()
+        public DOMBalancerStrategy(IOrderManager om, IExecutionStrategy exec, StrategySettings settings, IDOMListener domListener) : base()
         {
             _om = om;
             _exec = exec;
             _settings = settings;
+            _domListener = domListener;
+
+            _domListener.OnDOMChanged += () =>
+            {
+                // Force calculation on DOM change
+                base.SetEvent();
+            };
         }
 
         protected override void Do()

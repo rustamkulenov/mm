@@ -21,6 +21,7 @@ namespace mm
 
             _container
                 .RegisterBitmexAPI()
+                .RegisterBitmexAPISocket()
                 .RegisterMMTypes();
 
             _container.Verify();
@@ -36,6 +37,7 @@ namespace mm
             c.Register<DOMBalancerStrategy>(Lifestyle.Singleton);
             c.Register<IExecutionStrategy, BitmexSimpleExecutionStrategy>(Lifestyle.Singleton);
             c.Register<IOrderManager, OrderManager>(Lifestyle.Singleton);
+            c.Register<IDOMListener, BitmexDOMListener>(Lifestyle.Singleton);
 
             return c;
         }
@@ -53,6 +55,13 @@ namespace mm
             };
 
             c.RegisterInstance<IBitmexAuthorization>(authorization);
+            return c;
+        }
+
+        static Container RegisterBitmexAPISocket(this Container c)
+        {
+            c.Register<IBitmexApiSocketProxy, BitmexApiSocketProxy>(Lifestyle.Singleton);
+            c.Register<IBitmexApiSocketService, BitmexApiSocketService>(Lifestyle.Singleton);
             return c;
         }
 

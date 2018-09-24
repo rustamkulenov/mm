@@ -9,7 +9,7 @@ namespace mm
     /// </summary>
     internal abstract class MMStrategyBase : IDisposable
     {
-        private static readonly TimeSpan CHECK_INTERVAL = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan CHECK_INTERVAL = TimeSpan.FromSeconds(30);
         private readonly Thread _thread;
         private readonly AutoResetEvent _evt;
         private bool _active = true;
