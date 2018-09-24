@@ -28,19 +28,22 @@ namespace mm
 
         static Container RegisterMMTypes(this Container c)
         {
-            c.RegisterInstance<StrategySettings>(new StrategySettings(Instrument.XBTUSD(), 3m, 0.1));
+            var liquidityETH = 13 * 1000 * 1000; // 13M ETH liquidity to support in DOM
+            var ethusd = 235m; // Hardcoded ETHUSD quote)
+            var percent = 0.05 / 100.0; // 0.05%
+            c.RegisterInstance<StrategySettings>(new StrategySettings(Instrument.XBTUSD(), liquidityETH, ethusd, percent));
 
-            c.Register<DOMBalancerStrategy>();
-            c.Register<IExecutionStrategy, BitmexSimpleExecutionStrategy>();
-            c.Register<OrderManager>();
+            c.Register<DOMBalancerStrategy>(Lifestyle.Singleton);
+            c.Register<IExecutionStrategy, BitmexSimpleExecutionStrategy>(Lifestyle.Singleton);
+            c.Register<OrderManager>(Lifestyle.Singleton);
 
             return c;
         }
 
         static Container RegisterBitmexAPI(this Container c)
         {
-            c.Register<IBitmexApiProxy, BitmexApiProxy>();
-            c.Register<IBitmexApiService, BitmexApiService>();
+            c.Register<IBitmexApiProxy, BitmexApiProxy>(Lifestyle.Singleton);
+            c.Register<IBitmexApiService, BitmexApiService>(Lifestyle.Singleton);
 
             var authorization = new BitmexAuthorization
             {
@@ -59,11 +62,11 @@ namespace mm
             using (var b = _container.GetInstance<DOMBalancerStrategy>())
             {
                 b.Start();
-
                 Console.WriteLine("Press ENTER to exit");
                 Console.ReadLine();
                 Console.WriteLine("Stopping...");
             }
+            _container.Dispose();
         }
     }
 }

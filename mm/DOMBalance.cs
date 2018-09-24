@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using mm.Execution;
 
 namespace mm
 {
@@ -32,28 +33,33 @@ namespace mm
         /// Positive value means that new buy-orders shall be posted on this amount.
         /// Negative value means that existing buy-orders shall be closed on this amount.
         /// </summary>
-        public Decimal BuyDisbalance {get; private set;}
+        public Decimal BuyDisbalance { get; private set; }
 
         /// <summary>
         /// Amount required to sell to have requiredLiquidity/2 on sell-side.
         /// Positive value means that new sell-orders shall be posted on this amount.
         /// Negative value means that existing sell-orders shall be closed on this amount.
         /// </summary>
-        public Decimal SellDisbalance {get; private set;}
+        public Decimal SellDisbalance { get; private set; }
 
         /// <summary>
         /// Calcs balance and mid-price for the book. Provided bids and asks shall not contain own order.
         /// </summary>
         /// <param name="instr">Instrument</param>
-        /// <param name="bids">Bids of DOM</param>
-        /// <param name="asks">Asks of DOM</param>
         /// <param name="radiusFromMidpricePercent">Percent around mid-price to filter asks and bids</param>
         /// <param name="requiredLiquidity">Required liquidity to have in DOM within radiusFromMidpricePercent</param>
-        public DOMBalance(Instrument instr, IList<Tuple<decimal, int>> bids, IList<Tuple<decimal, int>> asks, double radiusFromMidpricePercent, decimal requiredLiquidity)
+        public DOMBalance(Instrument instr, SimpleDOM dom, double radiusFromMidpricePercent, decimal requiredLiquidity)
         {
-            if (requiredLiquidity < 0 ) throw new ArgumentOutOfRangeException();
-            if (radiusFromMidpricePercent <= 0 ) throw new ArgumentOutOfRangeException();
-            if (bids==null || asks==null) throw new ArgumentNullException("Please provide empty list instead of null");
+            if (dom == null)
+            {
+                throw new ArgumentNullException(nameof(dom));
+            }
+
+            IList<Tuple<decimal, decimal>> bids = dom.Bids;
+            IList<Tuple<decimal, decimal>> asks = dom.Asks;
+            if (requiredLiquidity < 0) throw new ArgumentOutOfRangeException();
+            if (radiusFromMidpricePercent <= 0) throw new ArgumentOutOfRangeException();
+            if (bids == null || asks == null) throw new ArgumentNullException("Please provide empty list instead of null");
 
             Instrument = instr;
 
@@ -89,8 +95,8 @@ namespace mm
                 }
             }
 
-            BuyDisbalance = requiredLiquidity/2.0m - BuyAmount;
-            SellDisbalance = requiredLiquidity/2.0m - SellAmount;
+            BuyDisbalance = requiredLiquidity / 2.0m - BuyAmount;
+            SellDisbalance = requiredLiquidity / 2.0m - SellAmount;
 
         }
     }

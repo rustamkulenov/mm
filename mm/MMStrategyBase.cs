@@ -12,14 +12,15 @@ namespace mm
         private static readonly TimeSpan CHECK_INTERVAL = TimeSpan.FromSeconds(5);
         private readonly OrderManager _om;
         private readonly Thread _thread;
-        private readonly ManualResetEvent _evt;
+        private readonly AutoResetEvent _evt;
         private bool _active = true;
 
         public MMStrategyBase(OrderManager om)
         {
             _om = om;
             _thread = new Thread(ThreadMethod);
-            _evt = new ManualResetEvent(true);
+            _thread.IsBackground = true;
+            _evt = new AutoResetEvent(false);
         }
 
         private void ThreadMethod(object obj)
