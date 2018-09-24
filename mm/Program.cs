@@ -30,7 +30,7 @@ namespace mm
         static Container RegisterMMTypes(this Container c)
         {
             var liquidityETH = 13 * 1000 * 1000; // 13M ETH liquidity to support in DOM
-            var ethusd = 235m; // Hardcoded ETHUSD quote)
+            var ethusd = 235m; // Hardcoded ETHUSD quote
             var percent = 0.05 / 100.0; // 0.05%
             c.RegisterInstance<StrategySettings>(new StrategySettings(Instrument.XBTUSD(), liquidityETH, ethusd, percent));
 

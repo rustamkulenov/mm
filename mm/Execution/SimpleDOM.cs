@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace mm.Execution
 {
+    /// <summary>
+    /// Simple DTO for DOM.
+    /// </summary>
     internal sealed class SimpleDOM
     {
 

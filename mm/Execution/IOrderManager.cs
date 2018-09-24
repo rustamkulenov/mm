@@ -1,5 +1,8 @@
 namespace mm.Execution
 {
+    /// <summary>
+    /// Manages market-maker's orders.
+    /// </summary>
     internal interface IOrderManager
     {
         /// <summary>

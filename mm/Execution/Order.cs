@@ -1,5 +1,8 @@
 namespace mm.Execution
 {
+    /// <summary>
+    /// Market-maker's order.
+    /// </summary>
     internal sealed class Order
     {
         public string OrderId { get; }

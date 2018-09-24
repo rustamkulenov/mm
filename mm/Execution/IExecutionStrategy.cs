@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace mm.Execution
 {
+    /// <summary>
+    /// Strategy for order execution.
+    /// </summary>
     internal interface IExecutionStrategy
     {
         /// <summary>

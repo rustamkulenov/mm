@@ -1,5 +1,8 @@
 namespace mm
 {
+    /// <summary>
+    /// Trade instrument.
+    /// </summary>
     internal sealed class Instrument
     {
         public string Symbol;

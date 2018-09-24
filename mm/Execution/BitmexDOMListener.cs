@@ -3,6 +3,9 @@ using Bitmex.NET;
 
 namespace mm.Execution
 {
+    /// <summary>
+    /// Listens for changes in DOM of the strategy instrument and notifies listeners.
+    /// </summary>
     internal sealed class BitmexDOMListener : IDOMListener
     {
         private readonly IBitmexApiSocketService _svc;
