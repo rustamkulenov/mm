@@ -10,11 +10,13 @@ namespace mm
     /// </summary>
     internal sealed class DOMBalancerStrategy : MMStrategyBase
     {
+        private readonly IOrderManager _om;
         private readonly IExecutionStrategy _exec;
         private readonly StrategySettings _settings;
 
-        public DOMBalancerStrategy(OrderManager om, IExecutionStrategy exec, StrategySettings settings) : base(om)
+        public DOMBalancerStrategy(IOrderManager om, IExecutionStrategy exec, StrategySettings settings) : base()
         {
+            _om = om;
             _exec = exec;
             _settings = settings;
         }
@@ -26,16 +28,37 @@ namespace mm
             if (bba != null)
             {
                 kethusd = (bba.Item1 + bba.Item2) / 2.0m;
-                _settings.ETHUSD = kethusd; // Update UTHUSD quote in settings
+                _settings.ETHUSD = kethusd; // Update ETHUSD quote in settings
                 kethusd *= 1000.0m;
             }
 
             var dom = _exec.GetDOM(_settings.Instrument).Result;
+            //TODO: Remove own orders from DOM before calcs
+
             var balance = new DOMBalance(_settings.Instrument, dom, _settings.RadiusPercent, _settings.RequiredLiquidityUSD);
 
             Console.WriteLine($"midPrice=${balance.MidPrice:0.#} low=${balance.MidPrice - balance.MidPrice * (decimal)_settings.RadiusPercent:0.#} high=${balance.MidPrice + balance.MidPrice * (decimal)_settings.RadiusPercent:0.#}");
             Console.WriteLine($"buyAmount={balance.BuyAmount / balance.MidPrice / 1000.0m:0.#}K XBT sellAmount={balance.SellAmount / balance.MidPrice / 1000.0m:0.#}K XBT "
             + $"buyDisb={balance.BuyDisbalance / kethusd:0.#}K ETH sellDisb={balance.SellDisbalance / kethusd:0.#}K ETH");
+
+            // If buy side volume is more than expected then fill some orders
+            if (balance.BuyDisbalance < 0)
+            {
+                _om.EatBidSide(-balance.BuyDisbalance);
+            }
+
+            // If sell side volume is more than expected then fill some orders
+            if (balance.SellDisbalance < 0)
+            {
+                _om.EatBidSide(-balance.SellDisbalance);
+            }
+
+            var buyPrice = balance.MidPrice - balance.MidPrice * (decimal)_settings.RadiusPercent;
+            var sellPrice = balance.MidPrice + balance.MidPrice * (decimal)_settings.RadiusPercent;
+            if (balance.MidPrice.HasValue)
+            {
+                _om.AmendMMOrders(buyPrice ?? 0, balance.BuyDisbalance, sellPrice ?? 0, balance.SellDisbalance);
+            }
         }
     }
 }

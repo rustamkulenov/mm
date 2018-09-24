@@ -39,11 +39,11 @@ namespace mm
         }
 
         /// <summary>
-        /// Ensures that if single large buy order is opened and it's size is half of required liquidity (L/2), then
+        /// Ensures that if single buy order is opened and it's size is half of required liquidity (L/2), then
         /// opposite sell order will be opened with size L/2.
         /// </summary>
         [Test]
-        public void OppositeOrderToSingleLargeBuy()
+        public void OppositeOrderToSingleBuy()
         {
             // Arrange
             const decimal PRICE = 6056.0m;
@@ -66,11 +66,11 @@ namespace mm
         }
 
         /// <summary>
-        /// Ensures that if single large sell order is opened and it's size is half of required liquidity (L/2), then
+        /// Ensures that if single sell order is opened and it's size is half of required liquidity (L/2), then
         /// opposite buy order will be opened with size L/2.
         /// </summary>
         [Test]
-        public void OppositeOrderToSingleLargeSell()
+        public void OppositeOrderToSingleSell()
         {
             // Arrange
             const decimal PRICE = 6056.0m;
@@ -92,5 +92,31 @@ namespace mm
             Assert.AreEqual(PRICE * LOT_SIZE, d.BuyDisbalance, "Expected to buy");
         }
 
+        /// <summary>
+        /// Ensures that if single large sell order is opened and it's size is more than required liquidity, then
+        /// opposite buy order will be opened with size L/2 and some sell orders need to be eaten.
+        /// </summary>
+        [Test]
+        public void SingleLargeSell()
+        {
+            // Arrange
+            const decimal PRICE = 6056.0m;
+            const int LOTS = 2;
+            const decimal REQUIRED_LIQUIDITY_IN_DOM = PRICE * LOTS * 0.8m;
+
+            var bids = new List<Tuple<decimal, decimal>>();
+            var asks = new List<Tuple<decimal, decimal>>();
+            asks.Add(new Tuple<decimal, decimal>(PRICE, LOTS));
+            var dom = new SimpleDOM(bids, asks);
+            // Act
+            var d = new DOMBalance(Instrument.XBTUSD(), dom, 1, REQUIRED_LIQUIDITY_IN_DOM);
+            // Asert
+            Assert.AreEqual(PRICE, d.MidPrice, "Incorrect mid-price");
+            Assert.AreEqual(0m, d.BuyAmount, "Incorrect buy amount");
+            Assert.Less(d.SellDisbalance, 0m, "Sell disbalance shall be negative (need close/eat some sell LMTs)");
+
+            Assert.AreEqual(PRICE * LOTS, d.SellAmount, "Incorrect sell amount");
+            Assert.AreEqual(REQUIRED_LIQUIDITY_IN_DOM / 2.0m, d.BuyDisbalance, "Expected to buy");
+        }
     }
 }

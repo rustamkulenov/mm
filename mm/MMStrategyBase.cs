@@ -10,14 +10,12 @@ namespace mm
     internal abstract class MMStrategyBase : IDisposable
     {
         private static readonly TimeSpan CHECK_INTERVAL = TimeSpan.FromSeconds(5);
-        private readonly OrderManager _om;
         private readonly Thread _thread;
         private readonly AutoResetEvent _evt;
         private bool _active = true;
 
-        public MMStrategyBase(OrderManager om)
+        public MMStrategyBase()
         {
-            _om = om;
             _thread = new Thread(ThreadMethod);
             _thread.IsBackground = true;
             _evt = new AutoResetEvent(false);

@@ -35,7 +35,7 @@ namespace mm
 
             c.Register<DOMBalancerStrategy>(Lifestyle.Singleton);
             c.Register<IExecutionStrategy, BitmexSimpleExecutionStrategy>(Lifestyle.Singleton);
-            c.Register<OrderManager>(Lifestyle.Singleton);
+            c.Register<IOrderManager, OrderManager>(Lifestyle.Singleton);
 
             return c;
         }

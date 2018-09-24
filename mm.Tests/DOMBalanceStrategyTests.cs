@@ -13,7 +13,7 @@ namespace mm
         {
             _container = new Container();
             _container.Register<DOMBalancerStrategy>();
-            _container.Register<OrderManager>();
+            _container.Register<IOrderManager, OrderManager>();
             _container.Register<IExecutionStrategy, ExecutionStrategyStub>();
             _container.RegisterInstance<StrategySettings>(new StrategySettings(Instrument.XBTUSD(), 300m, 235, 0.1));
         }
