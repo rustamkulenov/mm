@@ -14,7 +14,7 @@ This algo tries to maintain balance equation (13M ETH liquidity) for provided in
 - p - price from DOM book level;
 - v - volume from DOM book level;
 - p_mid - mid-price for the spread;
-- r - radius in % on mid-price where to maintain balance;
+- r - radius in % og the mid-price where to maintain balance;
 
 Algo places 2 large orders at prices p_mid*(1+r) and p_mid*(1-r). Volue is calculated based on disbalace between buy and sell sides.
 
