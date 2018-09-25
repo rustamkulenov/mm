@@ -58,7 +58,7 @@ namespace mm
             // If sell side volume is more than expected then fill some orders
             if (balance.SellDisbalance < 0)
             {
-                _om.EatBidSide(-balance.SellDisbalance);
+                _om.EatAskSide(-balance.SellDisbalance);
             }
 
             var buyPrice = balance.MidPrice - balance.MidPrice * (decimal)_settings.RadiusPercent;
